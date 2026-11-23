@@ -172,9 +172,7 @@ window.SITE_CONFIG = {
       ],
 
       // Buttons inside the modal and on the full project page
-      links: [
-        { label: "GitHub", href: "https://github.com/KylVorn", primary: true }
-      ],
+      links: [],
 
       // Set to true to show the "More..." button in the modal -> opens project.html?id=chess
       hasPage: true,
@@ -284,10 +282,7 @@ window.SITE_CONFIG = {
       ],
 
       // Buttons inside the modal and on the full project page
-      links: [
-        { label: "GitHub", href: "https://github.com/KylVorn", primary: true }
-        // { label: "Download", href: "https://github.com/KylVorn/wave/releases", primary: false }
-      ],
+      links: [],
 
       // Set to true to show the "More..." button in the modal -> opens project.html?id=wave
       hasPage: true,

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{KylVorn}</title>
+<link id="favicon" rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#000; --card:#080808; --line:rgba(255,255,255,.1);
+  --text:#f2f2f2; --muted:#8a8a93; --accent:#4cc2ff; --accent-2:#8b7bff;
+  --sans:"Inter","Segoe UI Variable","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{height:100%;scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100%;display:flex;flex-direction:column;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:clip}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+.wrap{width:100%;max-width:900px;margin:0 auto;padding:0 24px}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:11;background:rgba(0,0,0,.82);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+nav{display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-family:var(--mono);font-weight:700;font-size:15px}
+.back{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;color:var(--muted);font-size:14px;transition:background .2s,color .2s}
+.back:hover{background:rgba(255,255,255,.08);color:var(--text)}
+
+main{position:relative;flex:1;padding:48px 0 84px;display:flex;flex-direction:column}
+main>.wrap{position:relative;z-index:1}
+
+/* background ASCII text canvas */
+#bg-ascii{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  pointer-events:none;
+  z-index:0;
+  opacity:0;
+  transition:opacity 1.2s ease;
+  -webkit-mask-image:radial-gradient(ellipse closest-side at 50% 48%,#000 58%,transparent 100%);
+  mask-image:radial-gradient(ellipse closest-side at 50% 48%,#000 58%,transparent 100%);
+}
+#bg-ascii.on{opacity:1}
+
+.p-head{display:flex;flex-direction:column;gap:18px;padding-bottom:32px;border-bottom:1px solid var(--line)}
+.p-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ico{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;font-size:24px;background:#121212;border:1px solid var(--line)}
+.status{font-size:12px;color:var(--muted);padding:4px 11px;border:1px solid var(--line);border-radius:999px}
+h1{margin:0;font-family:var(--mono);font-size:clamp(30px,5.5vw,48px);letter-spacing:-.03em;line-height:1.15;text-shadow:0 0 18px #000}
+.lead{margin:0;font-size:clamp(16px,2vw,19px);color:var(--muted);max-width:65ch}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font-size:12px;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,.06);color:#b8b8c0}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:10px;font-weight:500;font-size:15px;border:1px solid var(--line);background:#0d0d0d;cursor:pointer;transition:transform .2s,border-color .2s}
+.btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.28)}
+.btn.primary{background:var(--text);color:#000;border-color:var(--text)}
+
+/* meta strip */
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:28px}
+.meta-card{padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(8,8,8,.88);backdrop-filter:blur(8px)}
+.meta-card small{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.meta-card strong{font-size:14.5px;font-weight:500}
+
+/* gallery */
+.gallery{margin-top:36px;display:flex;flex-direction:column;gap:12px}
+.stage{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#050505;aspect-ratio:16/9}
+.stage img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+.g-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.68);backdrop-filter:blur(8px);color:var(--text);cursor:pointer;display:grid;place-items:center;font-size:22px;transition:background .2s,border-color .2s}
+.g-nav:hover{background:rgba(0,0,0,.9);border-color:rgba(255,255,255,.35)}
+.g-nav.prev{left:12px}
+.g-nav.next{right:12px}
+.g-cap{font-size:13.5px;color:var(--muted);display:flex;justify-content:space-between;gap:12px}
+.thumbs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.thumb{width:96px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;border:1px solid var(--line);padding:0;background:#080808;cursor:pointer;opacity:.55;flex-shrink:0;transition:opacity .2s,border-color .2s}
+.thumb:hover,.thumb.on{opacity:1;border-color:var(--text)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* content sections */
+.p-body{margin-top:40px;display:flex;flex-direction:column;gap:32px}
+.p-sec h2{margin:0 0 12px;font-family:var(--mono);font-size:clamp(20px,3vw,24px);letter-spacing:-.02em}
+.p-sec p{margin:0 0 14px;color:var(--muted);font-size:15.5px}
+.p-sec p:last-child{margin-bottom:0}
+.p-sec ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.p-sec li{position:relative;padding-left:20px;color:var(--muted);font-size:15px}
+.p-sec li::before{content:"›";position:absolute;left:0;color:var(--accent);font-family:var(--mono);font-weight:700}
+.p-sec pre{margin:14px 0 0;padding:16px 18px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-family:var(--mono);font-size:13.5px;overflow-x:auto;color:var(--text)}
+
+/* 404 view */
+.empty{margin:auto;width:100%;padding:64px 24px;border:1px dashed var(--line);border-radius:20px;background:rgba(8,8,8,.72);backdrop-filter:blur(8px);text-align:center}
+.empty h1{font-size:clamp(42px,9vw,84px);margin-bottom:12px;min-height:1.15em;white-space:nowrap}
+.caret{display:inline-block;width:.07em;height:.92em;margin-left:.06em;vertical-align:-.1em;background:var(--text);animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.after{opacity:0;transform:translateY(12px);transition:opacity .65s cubic-bezier(.2,.7,.2,1),transform .65s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
+.empty.done .after{opacity:1;transform:none}
+.empty p{margin:0 auto 26px;max-width:48ch;color:var(--muted);font-size:16px}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);display:grid;place-items:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .2s}
+.lb.open{opacity:1;pointer-events:auto}
+.lb img{max-width:100%;max-height:90svh;border-radius:12px;border:1px solid var(--line);cursor:zoom-out}
+
+footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:14px;background:rgba(0,0,0,.75);backdrop-filter:blur(10px)}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .after{opacity:1;transform:none;transition:none}
+  .caret{animation:none}
+  #bg-ascii{transition:none}
+}
+</style>
+</head>
+<body>
+<canvas id="bg-ascii" aria-hidden="true"></canvas>
+
+<header>
+  <div class="wrap"><nav>
+    <a class="logo" href="index.html" id="logo"></a>
+    <a class="back" href="index.html">← Back to portfolio</a>
+  </nav></div>
+</header>
+
+<main><div class="wrap" id="app"></div></main>
+<footer><div class="wrap" id="footer"></div></footer>
+
+<div class="lb" id="lb" aria-hidden="true"><img id="lb-img" alt=""></div>
+
+<script src="config.js"></script>
+<script>
+const CFG = window.SITE_CONFIG || {};
+const T = CFG.theme || {};
+const rs = document.documentElement.style;
+Object.entries({bg:T.background,card:T.card,text:T.text,muted:T.muted,accent:T.accent,"accent-2":T.accent2,line:T.line,sans:T.fontSans,mono:T.fontMono})
+  .forEach(([k,v]) => { if(v) rs.setProperty("--"+k, v); });
+if(CFG.lang) document.documentElement.lang = CFG.lang;
+
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const slugify = (s, i) => String(s || ("item-" + i)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || ("item-" + i);
+const normImages = item => {
+  const raw = Array.isArray(item.images) ? item.images : (item.image ? [item.image] : []);
+  return raw.map(x => typeof x === "string" ? { src: x, caption: "" } : x).filter(x => x && x.src);
+};
+const btnHTML = b => {
+  const ext = /^https?:\/\//i.test(b.href || "") ? ' target="_blank" rel="noopener noreferrer"' : "";
+  return `<a class="btn${b.primary ? " primary" : ""}" href="${esc(b.href || "#")}"${ext}>${esc(b.label)}</a>`;
+};
+
+// ---- Favicon ({K} SVG by default, or custom image via config.favicon.src) ----
+(function applyFavicon(){
+  const favLink = document.getElementById("favicon");
+  if(!favLink) return;
+  const fav = CFG.favicon || {};
+  if(fav.enabled === false){ favLink.remove(); return; }
+  if(fav.src){ favLink.href = fav.src; return; }
+  const bg = fav.bg || T.background || "#000000";
+  const fg = fav.fg || T.text || "#f2f2f2";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">`
+    + `<rect width="64" height="64" rx="14" fill="${bg}"/>`
+    + `<text x="32" y="42" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="700" font-size="30" fill="${fg}">{K}</text>`
+    + `</svg>`;
+  favLink.href = "data:image/svg+xml," + encodeURIComponent(svg);
+})();
+
+// ---- Browser tab title + blinking cursor ----
+let tabTimer = null;
+function setTabTitle(baseTitle){
+  if(tabTimer){ clearInterval(tabTimer); tabTimer = null; }
+  const tabCfg = CFG.tab || {};
+  const cursor = tabCfg.cursor ?? "_";
+  const shouldBlink = tabCfg.blink !== false && Boolean(cursor) && !reduce;
+
+  document.title = baseTitle;
+  if(!shouldBlink) return;
+  let showCursor = true;
+  tabTimer = setInterval(() => {
+    showCursor = !showCursor;
+    document.title = showCursor ? `${baseTitle}${cursor}` : `${baseTitle}\u00A0`;
+  }, Math.max(250, Number(tabCfg.interval) || 650));
+}
+
+// ---- Background ASCII text renderer (works on both project pages & 404) ----
+function initAsciiText(opts){
+  const cv = document.getElementById("bg-ascii");
+  if(!opts || opts.enabled === false || !opts.text){
+    if(cv) cv.remove();
+    return;
+  }
+  const g = cv.getContext("2d");
+  const ramp = (opts.chars && opts.chars.length >= 2) ? opts.chars : " .,-~:;=!*#$@";
+  const glyphs = ramp[0] === " " ? ramp.slice(1) : ramp;
+  const color = opts.color || "255,255,255";
+  const maxAlpha = typeof opts.opacity === "number" ? opts.opacity : 0.2;
+  const animate = opts.animate !== false && !reduce;
+  const monoFont = T.fontMono || "'JetBrains Mono', ui-monospace, Consolas, monospace";
+
+  const off = document.createElement("canvas");
+  const og = off.getContext("2d", { willReadFrequently: true });
+  let W = 0, H = 0, cells = [];
+
+  function rebuild(){
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    W = innerWidth;
+    H = innerHeight;
+    cv.width = W * dpr;
+    cv.height = H * dpr;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const stepX = W < 640 ? 7 : 9;
+    const stepY = W < 640 ? 11 : 14;
+    const cols = Math.max(1, Math.floor(W / stepX));
+    const rows = Math.max(1, Math.floor(H / stepY));
+
+    off.width = cols;
+    off.height = rows;
+    og.clearRect(0, 0, cols, rows);
+
+    const text = String(opts.text);
+    let fontSize = Math.floor(rows * 0.48);
+    og.font = `700 ${fontSize}px ${monoFont}`;
+    const measured = og.measureText(text).width || 1;
+    if(measured > cols * 0.86){
+      fontSize = Math.max(8, Math.floor(fontSize * (cols * 0.86) / measured));
+      og.font = `700 ${fontSize}px ${monoFont}`;
+    }
+    og.textAlign = "center";
+    og.textBaseline = "middle";
+    og.fillStyle = "#ffffff";
+    og.fillText(text, cols / 2, rows / 2);
+
+    const data = og.getImageData(0, 0, cols, rows).data;
+    cells = [];
+    for(let y = 0; y < rows; y++){
+      for(let x = 0; x < cols; x++){
+        const a = data[(y * cols + x) * 4 + 3] / 255;
+        if(a > 0.14){
+          cells.push({
+            x: x * stepX + stepX / 2,
+            y: y * stepY + stepY / 2,
+            a,
+            seed: (x * 17 + y * 31) % 97
+          });
+        }
+      }
+    }
+    g.font = `700 ${stepY - 1}px ${monoFont}`;
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    draw(0);
+  }
+
+  function draw(t){
+    g.clearRect(0, 0, W, H);
+    const tick = Math.floor(t * 4);
+    for(let i = 0; i < cells.length; i++){
+      const c = cells[i];
+      const wave = animate ? (0.82 + 0.18 * Math.sin(t * 1.6 + c.seed)) : 1;
+      const alpha = Math.min(1, c.a * maxAlpha * wave);
+      const ch = glyphs[(c.seed + (animate ? Math.floor((tick + c.seed) / 5) : 0)) % glyphs.length];
+      g.fillStyle = `rgba(${color},${alpha.toFixed(3)})`;
+      g.fillText(ch, c.x, c.y);
+    }
+  }
+
+  rebuild();
+  addEventListener("resize", rebuild);
+  requestAnimationFrame(() => cv.classList.add("on"));
+
+  if(animate){
+    let t0 = 0;
+    (function loop(ts){
+      if(!t0) t0 = ts;
+      draw((ts - t0) / 1000);
+      requestAnimationFrame(loop);
+    })(0);
+  }
+}
+
+document.getElementById("logo").textContent = CFG.brand || "{KylVorn}";
+document.getElementById("footer").textContent = (CFG.footer || "© {year} KylVorn.").replace("{year}", new Date().getFullYear());
+
+const params = new URLSearchParams(location.search);
+const targetId = params.get("id") || decodeURIComponent(location.hash.replace(/^#/, ""));
+const items = (CFG.items || []).map((item, idx) => ({ ...item, _id: item.id || slugify(item.title, idx) }));
+const item = items.find(i => i._id === targetId);
+const app = document.getElementById("app");
+
+if(!item){
+  const nf = CFG.notFound || {};
+  const nfTitle = nf.title || "{404}";
+  const nfText = nf.text || "Project not found. Check the link or return to the main page.";
+  const nfBtnLabel = nf.buttonLabel || "Back to portfolio";
+  const nfBtnHref = nf.buttonHref || "index.html";
+  const tp = { enabled: true, startDelay: 180, speed: 115, jitter: 70, caret: true, ...(nf.typing || {}) };
+
+  setTabTitle(`${nfTitle} – ${CFG.brand || "{KylVorn}"}`);
+  initAsciiText(nf.ascii || { enabled: true, text: CFG.brand || "{KylVorn}" });
+
+  app.innerHTML = `<div class="empty" id="nf-box">
+    <h1 aria-label="${esc(nfTitle)}"><span id="nf-typed" aria-hidden="true"></span>${tp.caret ? '<span class="caret" aria-hidden="true"></span>' : ""}</h1>
+    <p class="after" style="--d:.08s">${esc(nfText)}</p>
+    <div class="after" style="--d:.2s"><a class="btn primary" href="${esc(nfBtnHref)}">${esc(nfBtnLabel)}</a></div>
+  </div>`;
+
+  const box = document.getElementById("nf-box");
+  const typed = document.getElementById("nf-typed");
+  const paint = n => { typed.textContent = nfTitle.slice(0, n); };
+
+  if(!tp.enabled || reduce){
+    paint(nfTitle.length);
+    box.classList.add("done");
+  } else {
+    let n = 0;
+    setTimeout(function tick(){
+      paint(++n);
+      if(n < nfTitle.length) setTimeout(tick, tp.speed + Math.random() * tp.jitter);
+      else setTimeout(() => box.classList.add("done"), 220);
+    }, tp.startDelay);
+  }
+} else {
+  setTabTitle(`${item.title} – ${CFG.brand || "{KylVorn}"}`);
+  const page = item.page || {};
+  initAsciiText(page.ascii);
+
+  const images = normImages(item);
+  const links = Array.isArray(item.links) ? item.links : [];
+  const meta = Array.isArray(page.meta) ? page.meta : [];
+  const sections = Array.isArray(page.sections) && page.sections.length
+    ? page.sections
+    : (Array.isArray(item.features) && item.features.length ? [{ heading: "// Key Features", bullets: item.features }] : []);
+
+  app.innerHTML = `
+    <div class="p-head">
+      <div class="p-top">
+        <div class="ico" aria-hidden="true">${item.icon || "📦"}</div>
+        ${item.status ? `<span class="status">${esc(item.status)}</span>` : ""}
+      </div>
+      <h1>${esc(item.title)}</h1>
+      <p class="lead">${esc(page.subtitle || item.summary || item.desc || "")}</p>
+      ${(item.tags && item.tags.length) ? `<div class="tags">${item.tags.map(t => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
+      ${links.length ? `<div class="btns">${links.map(btnHTML).join("")}</div>` : ""}
+    </div>
+    ${meta.length ? `<div class="meta">${meta.map(m => `<div class="meta-card"><small>${esc(m.label)}</small><strong>${esc(m.value)}</strong></div>`).join("")}</div>` : ""}
+    ${images.length ? `<div class="gallery" id="gallery"></div>` : ""}
+    ${sections.length ? `<div class="p-body">${sections.map(s => {
+      const paras = Array.isArray(s.text) ? s.text : (s.text ? [s.text] : []);
+      const bullets = Array.isArray(s.bullets) ? s.bullets : [];
+      return `<section class="p-sec">
+        ${s.heading ? `<h2>${esc(s.heading)}</h2>` : ""}
+        ${paras.map(p => `<p>${esc(p)}</p>`).join("")}
+        ${bullets.length ? `<ul>${bullets.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
+        ${s.code ? `<pre><code>${esc(s.code)}</code></pre>` : ""}
+      </section>`;
+    }).join("")}</div>` : ""}
+  `;
+
+  if(images.length){
+    let cur = 0;
+    const gal = document.getElementById("gallery");
+    const lb = document.getElementById("lb"), lbImg = document.getElementById("lb-img");
+    const renderGal = () => {
+      const img = images[cur], multi = images.length > 1;
+      gal.innerHTML = `
+        <div class="stage">
+          <img id="stage-img" src="${esc(img.src)}" alt="${esc(img.caption || item.title)}">
+          ${multi ? `<button class="g-nav prev" type="button" data-step="-1" aria-label="Previous">‹</button>
+                     <button class="g-nav next" type="button" data-step="1" aria-label="Next">›</button>` : ""}
+        </div>
+        <div class="g-cap"><span>${esc(img.caption || "")}</span><span>${multi ? `${cur + 1} / ${images.length}` : ""}</span></div>
+        ${multi ? `<div class="thumbs">${images.map((im, i) => `<button class="thumb${i === cur ? " on" : ""}" type="button" data-idx="${i}"><img src="${esc(im.src)}" alt=""></button>`).join("")}</div>` : ""}`;
+    };
+    renderGal();
+    gal.addEventListener("click", e => {
+      const st = e.target.closest("[data-step]");
+      if(st){ cur = (cur + Number(st.dataset.step) + images.length) % images.length; renderGal(); return; }
+      const th = e.target.closest("[data-idx]");
+      if(th){ cur = Number(th.dataset.idx); renderGal(); return; }
+      if(e.target.id === "stage-img"){ lbImg.src = images[cur].src; lb.classList.add("open"); lb.setAttribute("aria-hidden", "false"); }
+    });
+    lb.addEventListener("click", () => { lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); });
+    document.addEventListener("keydown", e => {
+      if(e.key === "Escape" && lb.classList.contains("open")){ lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); }
+      else if(e.key === "ArrowRight" && images.length > 1){ cur = (cur + 1) % images.length; renderGal(); }
+      else if(e.key === "ArrowLeft" && images.length > 1){ cur = (cur - 1 + images.length) % images.length; renderGal(); }
+    });
+  }
+}
+</script>
+</body>
+</html>

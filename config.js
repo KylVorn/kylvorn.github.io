@@ -117,7 +117,7 @@ window.SITE_CONFIG = {
     title: "// Contact",
     text: "Feedback, bug reports, or just talking code — always welcome.",
     buttons: [
-      { label: "NonCritical@kylvorn.org", href: "mailto:noncritical@kylvorn.org", primary: true },
+      { label: "NonCritical@kylvorn.org", href: "mailto:kylvorn@proton.me", primary: true },
       { label: "GitHub",  href: "https://github.com/BeepBoopBeem", primary: false },
       { label: "Discord", href: "https://discord.gg/vuQZsWmD7b",   primary: false }
     ]
